@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # SPDX-License-Identifier: Unlicense
 DATA_DIR = 'data'
-files = Dir["#{DATA_DIR}/**/*.json"].map { _1[(DATA_DIR.size+1)..-6] }
+files = Dir["#{DATA_DIR}/**/*"].map { _1[(DATA_DIR.size+1)..] }
 
 class String
   def sym = gsub(/\/|-|\./, '_')
@@ -15,9 +15,9 @@ c_cpp_code=%{
 #define JSON_TEST_DATA_DIR #{CMAKE_DIR.inspect}
 }
 
-h_path = -> { "JSON_TEST_DATA_DIR\"/#{_1}.json\"" }
+h_path = -> { "JSON_TEST_DATA_DIR\"/#{_1}\"" }
 
-c_cpp_code += "\n#define JSON_TEST_DATA_FILES #{files.map { h_path[_1] }.join(?,) }\n\n"
+c_cpp_code += "\n#define JSON_TEST_DATA_JSON_FILES #{files.select { _1.end_with? '.json' }.map { h_path[_1] }.join(?,) }\n\n"
 
 c_cpp_code += files.map {
   "#define JSON_TEST_DATA_FILE_#{_1.sym} #{ h_path[_1] }\n"
